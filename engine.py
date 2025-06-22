@@ -279,16 +279,16 @@ class Gamestate():
                     if not piecePinned or pinDirection == (-1,-1):
                         moves.append(Move((r,c),(r-1,c-1),self.board))
 
-                    elif (r-1,c-1) == self.enpassantPossible:
-                        moves.append(Move((r,c),(r-1,c-1),self.board,isEnpassantMove=True))
+                elif (r-1,c-1) == self.enpassantPossible:
+                    moves.append(Move((r,c),(r-1,c-1),self.board,isEnpassantMove=True))
 
             if c+1 <=7:
                 if self.board[r-1][c+1][0] == 'b':
                     if not piecePinned or pinDirection == (-1,1):
                         moves.append(Move((r,c),(r-1,c+1),self.board))
 
-                    elif (r-1,c+1) == self.enpassantPossible:
-                        moves.append(Move((r,c),(r-1,c+1),self.board,isEnpassantMove=True))
+                elif (r-1,c+1) == self.enpassantPossible:
+                    moves.append(Move((r,c),(r-1,c+1),self.board,isEnpassantMove=True))
 
         else :
             if self.board[r+1][c]=='--':
@@ -303,16 +303,16 @@ class Gamestate():
                     if not piecePinned or pinDirection == (1,-1):
                         moves.append(Move((r,c),(r+1,c-1),self.board))
 
-                    elif (r+1,c-1) == self.enpassantPossible:
-                        moves.append(Move((r,c),(r+1,c-1),self.board,isEnpassantMove=True))
+                elif (r+1,c-1) == self.enpassantPossible:
+                    moves.append(Move((r,c),(r+1,c-1),self.board,isEnpassantMove=True))
 
             if c+1 <=7:
                 if self.board[r+1][c+1][0] == 'w':
                     if not piecePinned or pinDirection == (1,1):
                         moves.append(Move((r,c),(r+1,c+1),self.board))
 
-                    elif (r+1,c+1) == self.enpassantPossible:
-                        moves.append(Move((r,c),(r+1,c+1),self.board,isEnpassantMove=True))
+                elif (r+1,c+1) == self.enpassantPossible:
+                    moves.append(Move((r,c),(r+1,c+1),self.board,isEnpassantMove=True))
 
     def getRookMoves(self,r,c,moves):
         piecePinned = False
