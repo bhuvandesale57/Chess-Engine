@@ -25,6 +25,8 @@ class Gamestate():
         self.pins = []
         self.checks = []
         self.enpassantPossible = ()
+        self.currentCastlingRight = CastleRights(True,True,True,True)
+        self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks,self.currentCastlingRight.bks,self.currentCastlingRight.wqs,self.currentCastlingRight.bqs)]
 
     def makeMove(self,move):
         self.board[move.startRow][move.startCol]="--"
@@ -50,6 +52,11 @@ class Gamestate():
         else:
             self.enpassantPossible = ()
 
+        self.updateCastleRights(move)
+
+        self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks,self.currentCastlingRight.bks,self.currentCastlingRight.wqs,self.currentCastlingRight.bqs))
+
+
     def undoMove(self):
         if len(self.moveLog)!=0:
             move=self.moveLog.pop()
@@ -71,6 +78,39 @@ class Gamestate():
         if move.pieceMoved[1] == 'p' and abs(move.startRow-move.endRow) == 2:
             self.enpassantPossible = ()
 
+        self.castleRightsLog.pop()
+        castleRights = self.castleRightsLog[-1]
+
+        self.currentCastlingRight.bks = castleRights.bks
+        self.currentCastlingRight.bqs = castleRights.bqs
+        self.currentCastlingRight.wks = castleRights.wks
+        self.currentCastlingRight.wqs = castleRights.wqs
+
+    
+    def updateCastleRights(self,move):
+        if move.pieceMoved == 'wK':
+            self.currentCastlingRight.wks = False
+            self.currentCastlingRight.wqs = False
+
+        elif move.pieceMoved == 'bK':
+            self.currentCastlingRight.bks = False
+            self.currentCastlingRight.bqs = False
+
+        elif move.pieceMoved == 'wR':
+            if move.startRow == 7:
+                if move.startCol == 0:
+                    self.currentCastlingRight.wqs = False
+
+                elif move.startCol == 7:
+                    self.currentCastlingRight.wks = False
+
+        elif move.pieceMoved == 'bR':
+            if move.startRow == 0:
+                if move.startCol == 0:
+                    self.currentCastlingRight.bqs = False
+
+                elif move.startCol == 7:
+                    self.currentCastlingRight.bks = False
 
     # def getValidMoves(self):
     #     moves = self.getAllPossibleMoves()
@@ -453,6 +493,14 @@ class Gamestate():
 
     # def getPawnMoves(self,r,c,moves):
     #     pass
+
+class CastleRights():
+    def __init__(self,wks,bks,wqs,bqs):
+        self.wks = wks
+        self.bks = bks
+        self.wqs = wqs
+        self.bqs = bqs
+        
 
 class Move():
 
