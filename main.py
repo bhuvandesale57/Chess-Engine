@@ -27,6 +27,8 @@ def main():
     validMoves=gs.getValidMoves()
     moveMade=False
 
+    animate =False
+
     print(gs.board)
     loadImages()
     running=True
@@ -60,6 +62,7 @@ def main():
                         if move == validMoves[i]:
                             gs.makeMove(validMoves[i])
                             moveMade=True
+                            animate = True
                             sqSelected = ()
                             playerClicks=[]
 
@@ -70,9 +73,11 @@ def main():
                 if e.key == p.K_z :
                     gs.undoMove()
                     moveMade = True
+                    animate = False
 
         if moveMade :
-            animateMove(gs.moveLog[-1],screen,gs.board,clock)
+            if animate:
+                animateMove(gs.moveLog[-1],screen,gs.board,clock)
             validMoves=gs.getValidMoves()
             moveMade=False       
 
