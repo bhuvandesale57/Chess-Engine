@@ -211,6 +211,17 @@ class Gamestate():
 
         self.currentCastlingRight = tempCastleRights
 
+        #check for the flags of checkmate and stalemate
+        if len(moves) == 0:
+            if self.inCheck():
+                self.checkMate = True
+            else:
+                self.staleMate = True
+
+        else:
+            self.checkMate = False
+            self.staleMate = False
+
         return moves
     
     def checkForPinsAndChecks(self):
