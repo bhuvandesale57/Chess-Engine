@@ -38,7 +38,7 @@ def main():
 
     gameOver = False
 
-    playerOne = False
+    playerOne = True
     playerTwo = False
 
     while running:
@@ -91,7 +91,10 @@ def main():
                     animate = False
 
         if not gameOver and not humanTurn:
-            AIMove = smartMoveFinder.findRandomMove(validMoves)
+            AIMove = smartMoveFinder.findBestMoves(gs,validMoves)
+
+            if AIMove is None:
+                AIMove = smartMoveFinder.findRandomMove(validMoves)
             gs.makeMove(AIMove)
             moveMade = True
             animate = True
