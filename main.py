@@ -39,7 +39,7 @@ def main():
     gameOver = False
 
     playerOne = True
-    playerTwo = False
+    playerTwo = True
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
@@ -81,6 +81,7 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
 
                 if e.key == p.K_r :
                     gs = engine.Gamestate()
@@ -89,6 +90,7 @@ def main():
                     playerClicks = []
                     moveMade = False
                     animate = False
+                    gameOver = False
 
         if not gameOver and not humanTurn:
             AIMove = smartMoveFinder.findBestMoves(gs,validMoves)
