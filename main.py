@@ -39,7 +39,7 @@ def main():
     gameOver = False
 
     playerOne = True
-    playerTwo = True
+    playerTwo = False
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
@@ -93,7 +93,7 @@ def main():
                     gameOver = False
 
         if not gameOver and not humanTurn:
-            AIMove = smartMoveFinder.findBestMoves(gs,validMoves)
+            AIMove = smartMoveFinder.findBestMoveMinMax(gs,validMoves)
 
             if AIMove is None:
                 AIMove = smartMoveFinder.findRandomMove(validMoves)
