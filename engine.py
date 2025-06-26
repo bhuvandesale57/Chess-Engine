@@ -13,6 +13,17 @@ class Gamestate():
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
         ]
 
+        # self.board=[
+        #     ["--","--","--","bQ","wB","--","--","bR"],
+        #     ["--","--","--","--","bK","--","--","--"],
+        #     ["--","--","--","--","--","--","--","--"],
+        #     ["--","--","--","--","--","--","--","--"],
+        #     ["--","--","--","--","bp","--","--","--"],
+        #     ["--","--","--","--","wQ","--","--","--"],
+        #     ["wp","wp","wp","wp","wp","wp","wp","wp"],
+        #     ["wR","wN","wB","wQ","wK","wB","wN","wR"]
+        # ]
+
         self.moveFunctions = {'p':self.getPawnMoves,'R':self.getRookMoves,'N':self.getKnightMoves,'B':self.getBishopMoves,'Q':self.getQueenMoves,'K':self.getKingMoves}
 
         self.whiteToMove=True
@@ -195,6 +206,8 @@ class Gamestate():
                         if not (moves[i].endRow,moves[i].endCol) in validSquares:
                             moves.remove(moves[i])
 
+                
+
             else:
                 self.getKingMoves(kingRow,kingCol,moves)
 
@@ -309,16 +322,25 @@ class Gamestate():
 
     def squareUnderAttack(self,r,c):
         self.whiteToMove = not self.whiteToMove
-        oppMoves = self.getAllPossibleMoves()
+        oppMoves = self.getAllPossibleMoves(ignoreKing=True)
         self.whiteToMove = not self.whiteToMove
 
         for move in oppMoves:
             if move.endRow == r and move.endCol == c:
                 return True
+            
+        kingRow, kingCol = self.blackKingLocation if self.whiteToMove else self.whiteKingLocation
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                if dr == 0 and dc == 0:
+                    continue
+                if kingRow + dr == r and kingCol + dc == c:
+                    return True
+
         return False
 
 
-    def getAllPossibleMoves(self):
+    def getAllPossibleMoves(self, ignoreKing = False):
         moves=[]
 
         for r in range(len(self.board)):
@@ -327,7 +349,8 @@ class Gamestate():
 
                 if (turn=='w' and self.whiteToMove) or (turn=='b' and not self.whiteToMove) :
                     piece=self.board[r][c][1]
-
+                    if ignoreKing and piece == 'K':
+                        continue
                     self.moveFunctions[piece](r,c,moves)
         return moves
 
@@ -512,22 +535,14 @@ class Gamestate():
                 endpiece = self.board[endrow][endcol]
 
                 if endpiece[0] != allycolor:
-                    if allycolor == 'w':
-                        self.whiteKingLocation = (endrow,endcol)
-
-                    else:
-                        self.blackKingLocation = (endrow,endcol)
-
-                    incheck,pins ,checks = self.checkForPinsAndChecks()
-
-                    if not incheck:    
-                        moves.append(Move((r,c),(endrow,endcol),self.board))
-
-                    if allycolor == 'w':
-                        self.whiteKingLocation = (r,c)
-
-                    else:
-                        self.blackKingLocation = (r,c)
+                    move = Move((r, c), (endrow, endcol), self.board)
+                    self.makeMove(move)
+                    self.whiteToMove = not self.whiteToMove
+                    in_check = self.inCheck()
+                    self.whiteToMove = not self.whiteToMove
+                    self.undoMove()
+                    if not in_check:
+                        moves.append(move)
 
 
     def getCastleMoves(self,r,c,moves):

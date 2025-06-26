@@ -13,33 +13,35 @@ def findBestMoves(gs,validMoves):
     bestScore = CHECKMATE
     bestMove = None
 
+    random.shuffle(validMoves)
     for playerMove in validMoves:
         gs.makeMove(playerMove)
         opponentsMoves = gs.getValidMoves()
         random.shuffle(opponentsMoves)
 
         if gs.checkMate:
-            score = CHECKMATE
+            opponentBestScore = -CHECKMATE
         elif gs.staleMate:
-            score = STALEMATE
+            opponentBestScore = STALEMATE
         else:
             # Assume opponent plays best move
-            opponentBestScore = CHECKMATE
+            opponentBestScore = -CHECKMATE
             for opponentMove in opponentsMoves:
                 gs.makeMove(opponentMove)
+                gs.getValidMoves()
                 if gs.checkMate:
-                    currScore = -CHECKMATE
+                    currScore = CHECKMATE
                 elif gs.staleMate:
                     currScore = STALEMATE
                 else:
                     currScore = -turnMultiplier * scoreMaterial(gs.board)
-                if currScore < opponentBestScore:
+                if currScore > opponentBestScore:
                     opponentBestScore = currScore
                 gs.undoMove()
             score = opponentBestScore
 
-        if score > bestScore:
-            bestScore = score
+        if opponentBestScore < bestScore:
+            bestScore = opponentBestScore
             bestMove = playerMove
 
         gs.undoMove()
