@@ -55,7 +55,9 @@ def findBestMoveMinMax(gs,validMoves):
     bestMove = None
 
     #findMoveMinMaxRecursively(gs,validMoves,DEPTH,gs.whiteToMove)
-    findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whiteToMove else -1)
+    #findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whiteToMove else -1)
+    findMoveNegaMaxAlphaBeta(gs,validMoves,DEPTH,-CHECKMATE,CHECKMATE,1 if gs.whiteToMove else -1)
+
 
     return bestMove
 
@@ -117,6 +119,33 @@ def findMoveNegaMax(gs,validMoves,depth,whiteToMove):
             if depth == DEPTH:
                 bestMove = move
         gs.undoMove()
+
+    return maxScore
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, whiteToMove):
+    global bestMove
+
+    if depth == 0:
+        return whiteToMove*scoreBoard(gs)
+    
+    random.shuffle(validMoves)
+    
+    maxScore = -CHECKMATE
+
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMaxAlphaBeta(gs,nextMoves,depth-1,-beta,-alpha,-whiteToMove)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                bestMove = move
+        gs.undoMove()
+        if maxScore > alpha:
+            alpha = maxScore
+
+        if alpha >= beta:
+            break
 
     return maxScore
 
