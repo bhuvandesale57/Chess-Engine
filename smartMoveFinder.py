@@ -54,7 +54,8 @@ def findBestMoveMinMax(gs,validMoves):
     global bestMove
     bestMove = None
 
-    findMoveMinMaxRecursively(gs,validMoves,DEPTH,gs.whiteToMove)
+    #findMoveMinMaxRecursively(gs,validMoves,DEPTH,gs.whiteToMove)
+    findMoveNegaMax(gs,validMoves,DEPTH,1 if gs.whiteToMove else -1)
 
     return bestMove
 
@@ -74,7 +75,13 @@ def findMoveMinMaxRecursively(gs,validMoves,depth,whiteToMove):
     for move in validMoves:
         gs.makeMove(move)
         nextMoves = gs.getValidMoves()
-        score = findMoveMinMaxRecursively(gs,nextMoves,depth - 1,not whiteToMove)
+
+        if gs.checkMate:
+            score = CHECKMATE if whiteToMove else -CHECKMATE
+        elif gs.staleMate:
+            score = STALEMATE 
+        else:
+            score = findMoveMinMaxRecursively(gs,nextMoves,depth - 1,not whiteToMove)
 
         if whiteToMove:
             if score > maxScore:
@@ -92,6 +99,26 @@ def findMoveMinMaxRecursively(gs,validMoves,depth,whiteToMove):
 
     
     return maxScore if whiteToMove else minScore
+
+def findMoveNegaMax(gs,validMoves,depth,whiteToMove):
+    global bestMove
+
+    if depth == 0:
+        return whiteToMove*scoreBoard(gs)
+    
+    maxScore = -CHECKMATE
+
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs,nextMoves,depth-1,-whiteToMove)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                bestMove = move
+        gs.undoMove()
+
+    return maxScore
 
 
 def scoreBoard(gs):
