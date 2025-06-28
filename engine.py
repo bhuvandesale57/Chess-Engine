@@ -36,6 +36,7 @@ class Gamestate():
         self.pins = []
         self.checks = []
         self.enpassantPossible = ()
+        self.enpassantPossibleLog = [self.enpassantPossible]
         self.currentCastlingRight = CastleRights(True,True,True,True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks,self.currentCastlingRight.bks,self.currentCastlingRight.wqs,self.currentCastlingRight.bqs)]
 
@@ -62,6 +63,8 @@ class Gamestate():
             self.enpassantPossible = ((move.startRow + move.endRow)//2 , move.startCol)
         else:
             self.enpassantPossible = ()
+
+        self.enpassantPossibleLog.append(self.enpassantPossible)
 
         if move.isCastleMove:
             if move.endCol - move.startCol == 2:
@@ -92,10 +95,13 @@ class Gamestate():
         if move.isEnpassantMove:
             self.board[move.endRow][move.endCol]="--"
             self.board[move.startRow][move.endCol]=move.pieceCaptured
-            self.enpassantPossible = (move.endRow,move.endCol)
+            #self.enpassantPossible = (move.endRow,move.endCol)
 
-        if move.pieceMoved[1] == 'p' and abs(move.startRow-move.endRow) == 2:
-            self.enpassantPossible = ()
+        # if move.pieceMoved[1] == 'p' and abs(move.startRow-move.endRow) == 2:
+        #     self.enpassantPossible = ()
+
+        self.enpassantPossibleLog.pop()
+        self.enpassantPossible = self.enpassantPossibleLog[-1]
 
         self.castleRightsLog.pop()
         castleRights = self.castleRightsLog[-1]
@@ -564,14 +570,14 @@ class Gamestate():
 
         
     def getKingSideCastleMoves(self,r,c,moves):
-        if self.board[r][c+1] == "--" and self.board[r][c+2] == "--":
+        if self.board[r][c+1] == "--" and self.board[r][c+2] == "--" and self.board[r][c+3][1] == "R":
             if not self.squareUnderAttack(r,c+1) and not self.squareUnderAttack(r,c+2):
                 moves.append(Move((r,c),(r,c+2),self.board,isCastleMove = True))
 
 
     def getQueenSideCastleMoves(self,r,c,moves):
-        if self.board[r][c-1] == "--" and self.board[r][c-2] == "--" and self.board[r][c-3] == "--":
-            if not self.squareUnderAttack(r,c-1) and not self.squareUnderAttack(r,c-2):
+        if self.board[r][c-1] == "--" and self.board[r][c-2] == "--" and self.board[r][c-3] == "--" and self.board[r][c-4][1] == 'R':
+            if not self.squareUnderAttack(r,c-1) and not self.squareUnderAttack(r,c-2) and not self.squareUnderAttack(r,c-3):
                 moves.append(Move((r,c),(r,c-2),self.board,isCastleMove = True)) 
     # def getPawnMoves(self,r,c,moves):
     #     pass
