@@ -49,6 +49,8 @@ def main():
     AIThinking = False
     moveFinderProcess = None
 
+    moveUndone = False
+
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
@@ -87,9 +89,17 @@ def main():
             elif e.type==p.KEYDOWN :
                 if e.key == p.K_z :
                     gs.undoMove()
+                    sqSelected = ()
+                    playerClicks = []
                     moveMade = True
                     animate = False
                     gameOver = False
+
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+
+                    moveUndone = True
 
                 if e.key == p.K_r :
                     gs = engine.Gamestate()
@@ -100,7 +110,13 @@ def main():
                     animate = False
                     gameOver = False
 
-        if not gameOver and not humanTurn:
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+
+                    moveUndone = True
+
+        if not gameOver and not humanTurn and not moveUndone:
             if not AIThinking:
                 AIThinking = True
                 returnQueue = Queue()
@@ -122,6 +138,7 @@ def main():
             validMoves=gs.getValidMoves()
             moveMade=False       
             animate = False 
+            moveUndone = False
 
         drawGameState(screen,gs,validMoves,sqSelected,moveLogFont)
 
