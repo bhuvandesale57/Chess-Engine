@@ -1,6 +1,85 @@
 import random
 
 pieceScore = {'K':0,'Q':9,'R':5,'B':3,'N':3,'p':1}
+
+knightScores = [
+                [1,1,1,1,1,1,1,1],
+                [1,2,2,2,2,2,2,1],
+                [1,2,3,3,3,3,2,1],
+                [1,2,3,4,4,3,2,1],
+                [1,2,3,4,4,3,2,1],
+                [1,2,3,3,3,3,2,1],
+                [1,2,2,2,2,2,2,1],
+                [1,1,1,1,1,1,1,1]
+                ]
+
+BishopScores = [
+                [4,3,2,1,1,2,3,4],
+                [3,4,3,2,2,3,4,3],
+                [2,3,4,3,3,4,3,2],
+                [1,2,3,4,4,3,2,1],
+                [1,2,3,4,4,3,2,1],
+                [2,3,4,3,3,4,3,1],
+                [3,4,3,2,2,3,4,3],
+                [4,3,2,1,1,2,3,4]
+                ]
+
+QueenScores = [
+                [1,1,1,3,1,1,1,1],
+                [1,2,3,3,3,1,1,1],
+                [1,4,3,3,3,4,2,1],
+                [1,2,3,3,3,2,2,1],
+                [1,2,3,3,3,2,2,1],
+                [1,4,3,3,3,4,2,1],
+                [1,1,2,3,3,1,1,1],
+                [1,1,1,3,1,1,1,1]
+                ]
+
+RookScores = [
+                [4,3,4,4,4,4,3,4],
+                [4,4,4,4,4,4,4,4],
+                [1,1,2,3,3,2,1,1],
+                [1,2,3,4,4,3,2,1],
+                [1,2,3,4,4,3,2,1],
+                [1,1,2,3,3,2,1,1],
+                [4,4,4,4,4,4,4,4],
+                [4,3,4,4,4,4,3,4]
+                ]
+
+whitePawnScores = [
+                    [8,8,8,8,8,8,8,8],
+                    [8,8,8,8,8,8,8,8],
+                    [5,6,6,7,7,6,6,5],
+                    [2,3,3,5,5,3,3,2],
+                    [1,2,3,4,4,3,2,1],
+                    [1,1,2,3,3,2,1,1],
+                    [1,1,1,0,0,1,1,1],
+                    [0,0,0,0,0,0,0,0]
+                    ]
+
+blackPawnScores = [
+                    [0,0,0,0,0,0,0,0],
+                    [1,1,1,0,0,1,1,1],
+                    [1,1,2,3,3,2,1,1],
+                    [1,2,3,4,4,3,2,1],
+                    [2,3,3,5,5,3,3,2],
+                    [5,6,6,7,7,6,6,5],
+                    [8,8,8,8,8,8,8,8],
+                    [8,8,8,8,8,8,8,8]
+                    ]
+
+KingScores = [
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0]
+            ]
+
+piecePositionScores = {'N':knightScores,'B':BishopScores,'Q':QueenScores,'R':RookScores,'wp':whitePawnScores,'bp':blackPawnScores,'K':KingScores}
 CHECKMATE = 1000
 STALEMATE = 0
 DEPTH = 3
@@ -167,12 +246,19 @@ def scoreBoard(gs):
 
 def scoreMaterial(board):
     score = 0
-    for row in board:
-        for square in row:
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            square = board[row][col]
+            piecePositionScore = 0 
+            if square != '--':
+                if square[1] == 'p':
+                    piecePositionScore = piecePositionScores[square][row][col]
+                else:
+                    piecePositionScore = piecePositionScores[square[1]][row][col]
             if square[0] == 'w':
-                score += pieceScore[square[1]]
+                score += pieceScore[square[1]] + piecePositionScore*0.1
 
             elif square[0] == 'b':
-                score-=pieceScore[square[1]]
+                score-=pieceScore[square[1]] + piecePositionScore*0.1
 
     return score

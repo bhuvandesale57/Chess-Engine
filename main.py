@@ -42,8 +42,8 @@ def main():
 
     gameOver = False
 
-    playerOne = True
-    playerTwo = True
+    playerOne = True # True for human turn ,color white 
+    playerTwo = False # same for black
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
