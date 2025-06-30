@@ -129,7 +129,7 @@ def findBestMoves(gs,validMoves):
     return bestMove
 
 
-def findBestMoveMinMax(gs,validMoves):
+def findBestMoveMinMax(gs,validMoves,returnQueue):
     global bestMove
     bestMove = None
 
@@ -138,7 +138,7 @@ def findBestMoveMinMax(gs,validMoves):
     findMoveNegaMaxAlphaBeta(gs,validMoves,DEPTH,-CHECKMATE,CHECKMATE,1 if gs.whiteToMove else -1)
 
 
-    return bestMove
+    returnQueue.put(bestMove)
 
 def findMoveMinMaxRecursively(gs,validMoves,depth,whiteToMove):
     global bestMove

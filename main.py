@@ -2,6 +2,7 @@
 
 import pygame as p
 import engine,smartMoveFinder
+from multiprocessing import Process,Queue
 
 BOARD_WIDTH = BOARD_HEIGHT = 512
 MOVE_LOG_PANEL_WIDTH = 250
@@ -45,6 +46,9 @@ def main():
     playerOne = True # True for human turn ,color white 
     playerTwo = False # same for black
 
+    AIThinking = False
+    moveFinderProcess = None
+
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
@@ -52,7 +56,7 @@ def main():
                 running=False
 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver and humanTurn:
+                if not gameOver:
                     location = p.mouse.get_pos()
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE 
@@ -64,7 +68,7 @@ def main():
                         sqSelected = (row,col)
                         playerClicks.append(sqSelected)
 
-                    if len(playerClicks) == 2:
+                    if len(playerClicks) == 2 and humanTurn:
                         move=engine.Move(playerClicks[0],playerClicks[1],gs.board)
                         print(move.getChessNotation())
 
@@ -97,13 +101,20 @@ def main():
                     gameOver = False
 
         if not gameOver and not humanTurn:
-            AIMove = smartMoveFinder.findBestMoveMinMax(gs,validMoves)
-
-            if AIMove is None:
-                AIMove = smartMoveFinder.findRandomMove(validMoves)
-            gs.makeMove(AIMove)
-            moveMade = True
-            animate = True
+            if not AIThinking:
+                AIThinking = True
+                returnQueue = Queue()
+                moveFinderProcess = Process(target=smartMoveFinder.findBestMoveMinMax,args=(gs,validMoves,returnQueue))
+                moveFinderProcess.start()
+                #AIMove = smartMoveFinder.findBestMoveMinMax(gs,validMoves)
+            if not moveFinderProcess.is_alive():
+                AIMove = returnQueue.get()
+                if AIMove is None:
+                    AIMove = smartMoveFinder.findRandomMove(validMoves)
+                gs.makeMove(AIMove)
+                moveMade = True
+                animate = True 
+                AIThinking = False
 
         if moveMade :
             if animate:
